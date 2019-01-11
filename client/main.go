@@ -297,6 +297,13 @@ func main() {
 		checkError(err)
 		listener, err := net.ListenTCP("tcp", addr)
 		checkError(err)
+		fdValue := reflect.Indirect(reflect.Indirect(reflect.ValueOf(listener)).FieldByName("fd"))
+		fd := uintptr(fdValue.FieldByName("sysfd").Int())
+		if err = syscall.SetsockoptInt(fd, syscall.SOL_IP, syscall.IP_TRANSPARENT, 1); err != nil {
+			syscall.Close(fd)
+			log.Println("syscall.SetsockoptInt err: %s", err)
+			return
+		}
 
 		log.Println("initiating key derivation")
 		pass := pbkdf2.Key([]byte(config.Key), []byte(SALT), 4096, 32, sha1.New)
