@@ -303,7 +303,7 @@ func main() {
 		if err = syscall.SetsockoptInt(fd, syscall.SOL_IP, syscall.IP_TRANSPARENT, 1); err != nil {
 			syscall.Close(fd)
 			log.Println("syscall.SetsockoptInt err: %s", err)
-			return
+			return nil
 		}
 
 		log.Println("initiating key derivation")
