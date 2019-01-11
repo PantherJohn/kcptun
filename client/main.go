@@ -299,8 +299,7 @@ func main() {
 		checkError(err)
 		listener, err := net.ListenTCP("tcp", addr)
 		checkError(err)
-		fdValue := reflect.Indirect(reflect.Indirect(reflect.ValueOf(listener)).FieldByName("fd"))
-		fd := uintptr(fdValue.FieldByName("sysfd").Int())
+		fd := int(rFieldByNames(l, "fd", "pfd", "Sysfd").Int())
 		if err = syscall.SetsockoptInt(fd, syscall.SOL_IP, syscall.IP_TRANSPARENT, 1); err != nil {
 			syscall.Close(fd)
 			log.Println("syscall.SetsockoptInt err: %s", err)
@@ -513,4 +512,13 @@ func snmpLogger(path string, interval int) {
 			f.Close()
 		}
 	}
+}
+
+func rFieldByNames(i interface{}, fields...string) (field reflect.Value) {
+	v := reflect.Indirect(reflect.ValueOf(i))
+	for _, n := range fields {
+		field = reflect.Indirect(v.FieldByName(n))
+		v = field
+	}
+	return
 }
