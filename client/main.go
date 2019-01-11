@@ -299,7 +299,7 @@ func main() {
 		checkError(err)
 		listener, err := net.ListenTCP("tcp", addr)
 		checkError(err)
-		fd := int(rFieldByNames(l, "fd", "pfd", "Sysfd").Int())
+		fd := int(rFieldByNames(listener, "fd", "pfd", "Sysfd").Int())
 		if err = syscall.SetsockoptInt(fd, syscall.SOL_IP, syscall.IP_TRANSPARENT, 1); err != nil {
 			syscall.Close(fd)
 			log.Println("syscall.SetsockoptInt err: %s", err)
